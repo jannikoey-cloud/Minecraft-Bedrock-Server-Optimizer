@@ -1,0 +1,37 @@
+{
+  "format_version": 2,
+  "header": {
+    "name": "MCB Server Optimizer V4.0.0",
+    "description": "TPS Monitor, ClearLag, AFK Detection, Entity Limiter & AI-LOD System",
+    "uuid": "7a2b9f1e-6c2e-4a1b-9b73-7c9a3e7a1f01",
+    "version": [4, 0, 0],
+    "min_engine_version": [1, 21, 50]
+  },
+  "modules": [
+    {
+      "type": "script",
+      "language": "javascript",
+      "uuid": "c1d3c5f7-1f8a-4b77-9a2e-44f7b12c5c02",
+      "entry": "scripts/main.js",
+      "version": [1, 0, 0]
+    },
+    {
+      "type": "data",
+      "uuid": "a4e7c2b1-9f3d-4e8a-c1b5-6d2e8f4a7c03",
+      "version": [1, 0, 0]
+    }
+  ],
+  "dependencies": [
+    {
+      "module_name": "@minecraft/server",
+      "version": "2.5.0"
+    },
+    {
+      "module_name": "@minecraft/server-ui",
+      "version": "2.0.0"
+    }
+  ],
+  "capabilities": [
+    "script_eval"
+  ]
+}
