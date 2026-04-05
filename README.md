@@ -18,7 +18,7 @@ Detects idle players based on position change and tags them with `afk`. Configur
 ### Spawn Limiter
 Enforces per-type entity caps within a 16-block radius. When a limit is exceeded the newly spawned entity is removed immediately. Sends actionbar notifications to nearby players and operators. Limits are fully editable at runtime through the settings UI — add, modify, or remove mob types without restarting the server.
 
-### AI-LOD System
+### AI-LOD System (Default off)
 Distance-based AI throttling across all dimensions. Entities are sorted into three tiers every check interval:
 
 | Tier | Distance | Behavior |
@@ -47,7 +47,7 @@ All values are configurable at runtime via `/mcbso:settings` (OP only). Changes 
 - Spawn Limiter — warning threshold, message duration, notification cooldown and radius, per-type mob limits (add / edit / delete)
 - AI-LOD System — enable toggle, tier distances, check interval
 - TPS Monitor — sample size for rolling average
-- Language — switch between `en_US` and `de_DE`
+- Language — switch between multiple languages
 - Reset All — restore all values to config.js defaults
 
 ---
@@ -65,7 +65,7 @@ All values are configurable at runtime via `/mcbso:settings` (OP only). Changes 
 | `/mcbso:afklist` | OP | List AFK players with duration |
 | `/mcbso:lodinfo` | OP | AI-LOD tier distribution statistics |
 | `/mcbso:settings` | OP | Open settings UI |
-| `/mcbso:lang` | OP | Change language (`en_US` / `de_DE`) |
+| `/mcbso:lang` | OP | Change language (`en_US` / `...`) |
 
 ---
 
