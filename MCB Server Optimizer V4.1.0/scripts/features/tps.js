@@ -44,7 +44,7 @@ export function startTpsLoop() {
     }
     setTps(Math.round(tpsSum / tpsHistory.length));
 
-    // Update actionbar
+    // Update actionbar - OPT: iterate only active TPS players, not all players
     if (tpsPlayers.size === 0) return;
     if (tps !== lastTpsValue) {
       tpsColorStr  = `${tps >= 18 ? "§a" : tps >= 12 ? "§e" : "§c"}TPS: ${tps}`;

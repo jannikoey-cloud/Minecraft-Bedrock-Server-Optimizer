@@ -23,7 +23,7 @@ export const CLEAR_INTERVAL = 24000;
 export const MOB_CAP_WARNING = 500;
 
 /** Check interval for mob cap warning in ticks. */
-export const MOB_CAP_CHECK_INTERVAL = 400;
+export const MOB_CAP_CHECK_INTERVAL = 1000;
 
 // ──────────────────────────────────────────────
 //  AFK DETECTION
@@ -92,7 +92,7 @@ export const DIMENSIONS = ["overworld", "nether", "the_end"];
  * false → system does not start, no tags are set,
  *         entities run with full vanilla AI.
  */
-export const LOD_ENABLED = true;
+export const LOD_ENABLED = false;
 
 /**
  * Distance thresholds for the three AI tiers (in blocks).
@@ -163,8 +163,17 @@ export const CONFIG_META = [
     description: "Ticks between mob cap checks",
     type:        "integer",
     min:         20,
-    max:         2000,
-    default:     400,
+    max:         6000,
+    default:     1000,
+  },
+  {
+    key:         "NOTIFY_COOLDOWN_TICKS",
+    label:       "Notification Cooldown",
+    description: "Minimum ticks between identical operator notifications (anti-spam)",
+    type:        "integer",
+    min:         20,
+    max:         400,
+    default:     60,
   },
   {
     key:         "AFK_THRESHOLD",
@@ -203,15 +212,6 @@ export const CONFIG_META = [
     default:     60,
   },
   {
-    key:         "NOTIFY_COOLDOWN_TICKS",
-    label:       "Notification Cooldown",
-    description: "Minimum ticks between identical player messages (anti-spam)",
-    type:        "integer",
-    min:         20,
-    max:         400,
-    default:     40,
-  },
-  {
     key:         "SPAWN_NOTIFY_RADIUS",
     label:       "Spawn Notification Radius",
     description: "Radius in blocks for local spawn limit notifications",
@@ -225,7 +225,7 @@ export const CONFIG_META = [
     label:       "TPS Sample Size",
     description: "Number of TPS measurements for the moving average",
     type:        "integer",
-    min:         5,
+    min:         1,
     max:         100,
     default:     20,
   },

@@ -11,8 +11,8 @@
  * ============================================================
  */
 
-import { world, system } from "@minecraft/server";
-import { ENTITY_LIMITS, MOB_CAP_CHECK_INTERVAL } from "../config.js";
+import { world, system, PlayerPermissionLevel } from "@minecraft/server";
+import { ENTITY_LIMITS } from "../config.js";
 import { get } from "../core/settings.js";
 import { getRuntimeLimits } from "../core/ui.js";
 import { globalTick, killQueue, spawnNotifyCooldown } from "../state.js";
@@ -27,12 +27,13 @@ function getTrackedTypes() { return getRuntimeLimits(); }
 
 function notifyOps(message) {
   for (const p of world.getPlayers())
-    if (p.permissionLevel >= 1) p.sendMessage(message);
+    if (p.playerPermissionLevel === PlayerPermissionLevel.Operator) p.sendMessage(message);
 }
 
 function checkAndSetCooldown(key) {
+  const cooldown = get("NOTIFY_COOLDOWN_TICKS");
   const last = spawnNotifyCooldown.get(key) || 0;
-  if (globalTick - last < get("NOTIFY_COOLDOWN_TICKS")) return false;
+  if (globalTick - last < cooldown) return false;
   spawnNotifyCooldown.set(key, globalTick);
   return true;
 }
@@ -47,7 +48,7 @@ function notifySpawnLimit(snapDimId, snapLoc, message) {
   const radius = get("SPAWN_NOTIFY_RADIUS");
   const dur    = get("SPAWN_MSG_DURATION");
   for (const p of world.getPlayers()) {
-    const isOp    = p.permissionLevel >= 1;
+    const isOp    = p.playerPermissionLevel === PlayerPermissionLevel.Operator;
     const sameDim = p.dimension.id === snapDimId;
     const nearby  = sameDim &&
       Math.abs(p.location.x - snapLoc.x) <= radius &&
@@ -58,9 +59,17 @@ function notifySpawnLimit(snapDimId, snapLoc, message) {
 }
 
 // ── Mob Cap Warning ───────────────────────────────────────────
+// OPT: MOB_CAP_CHECK_INTERVAL cannot be passed directly to runInterval()
+// because the interval is fixed at registration time. Instead we run on
+// a fixed 20-tick base and track elapsed ticks manually, so the interval
+// can be changed at runtime via the settings UI.
 
 export function startMobCapLoop() {
+  let elapsed = 0;
   system.runInterval(() => {
+    elapsed += 20;
+    if (elapsed < get("MOB_CAP_CHECK_INTERVAL")) return;
+    elapsed = 0;
     try {
       const dim    = world.getDimension("overworld");
       const all    = dim.getEntities();
@@ -73,7 +82,7 @@ export function startMobCapLoop() {
       if (mobCount > get("MOB_CAP_WARNING"))
         notifyOps(t("mobcap_warning", { count: mobCount }));
     } catch {}
-  }, MOB_CAP_CHECK_INTERVAL);
+  }, 20);
 }
 
 // ── Spawn Event ───────────────────────────────────────────────
@@ -107,7 +116,6 @@ export function startSpawnLimiter() {
     // Limit exceeded → kill
     if (effectiveCount > limit) {
       killQueue.set(type, queued + 1);
-
       system.run(() => {
         const q = killQueue.get(type) || 1;
         if (q <= 1) killQueue.delete(type);

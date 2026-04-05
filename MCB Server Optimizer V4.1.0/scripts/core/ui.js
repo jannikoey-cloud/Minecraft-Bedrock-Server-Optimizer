@@ -50,15 +50,15 @@ function showMainMenu(player) {
     .then(res => {
       if (res.canceled || res.selection === undefined) return;
       switch (res.selection) {
-        case 0: showClearLagMenu(player);     break;
-        case 1: showAfkMenu(player);          break;
+        case 0: showClearLagMenu(player); break;
+        case 1: showAfkMenu(player); break;
         case 2: showSpawnLimiterMenu(player); break;
-        case 3: showLodMenu(player);          break;
-        case 4: showTpsMenu(player);          break;
-        case 5: showLangMenu(player);         break;
-        case 6: showResetConfirm(player);     break;
+        case 3: showLodMenu(player); break;
+        case 4: showTpsMenu(player); break;
+        case 5: showLangMenu(player); break;
+        case 6: showResetConfirm(player); break;
       }
-    }).catch(() => {});
+    }).catch(() => { });
 }
 
 // ── ClearLag ──────────────────────────────────────────────────
@@ -66,24 +66,27 @@ function showMainMenu(player) {
 function showClearLagMenu(player) {
   new ModalFormData()
     .title(t("ui_clearlag_title"))
-    .textField(t("ui_clearlag_iv",  { val: get("CLEAR_INTERVAL") }),      "2400-144000", { defaultValue: String(get("CLEAR_INTERVAL")) })
-    .textField(t("ui_clearlag_cap", { val: get("MOB_CAP_WARNING") }),     "50-5000",     { defaultValue: String(get("MOB_CAP_WARNING")) })
+    .textField(t("ui_clearlag_iv", { val: get("CLEAR_INTERVAL") }), "2400-144000", { defaultValue: String(get("CLEAR_INTERVAL")) })
+    .textField(t("ui_clearlag_cap", { val: get("MOB_CAP_WARNING") }), "50-5000", { defaultValue: String(get("MOB_CAP_WARNING")) })
     .textField(t("ui_clearlag_chk", { val: get("MOB_CAP_CHECK_INTERVAL") }), "20-2000", { defaultValue: String(get("MOB_CAP_CHECK_INTERVAL")) })
+    .textField(t("ui_clearlag_cd", { val: get("NOTIFY_COOLDOWN_TICKS") }), "20-400", { defaultValue: String(get("NOTIFY_COOLDOWN_TICKS")) })
     .show(player)
     .then(res => {
       if (res.canceled || !res.formValues) { showMainMenu(player); return; }
-      const [rawIv, rawCap, rawChk] = res.formValues;
+      const [rawIv, rawCap, rawChk, rawCd] = res.formValues;
       const errors = [];
-      const iv  = _intRaw(rawIv,  2400,  144000, errors, "Interval");
-      const cap = _intRaw(rawCap,   50,    5000, errors, "MobCap");
-      const chk = _intRaw(rawChk,   20,    2000, errors, "Check-Interval");
+      const iv = _intRaw(rawIv, 2400, 144000, errors, "Interval");
+      const cap = _intRaw(rawCap, 50, 5000, errors, "MobCap");
+      const chk = _intRaw(rawChk, 20, 2000, errors, "Check-Interval");
+      const cd = _intRaw(rawCd, 20, 400, errors, "Cooldown");
       if (errors.length > 0) { showError(player, errors, () => showClearLagMenu(player)); return; }
-      set("CLEAR_INTERVAL",         iv);
-      set("MOB_CAP_WARNING",        cap);
+      set("CLEAR_INTERVAL", iv);
+      set("MOB_CAP_WARNING", cap);
       set("MOB_CAP_CHECK_INTERVAL", chk);
-      player.sendMessage("[SAL] " + t("ui_clearlag_saved"));
+      set("NOTIFY_COOLDOWN_TICKS", cd);
+      player.sendMessage(t("ui_clearlag_saved"));
       showMainMenu(player);
-    }).catch(e => { player.sendMessage("[SAL] Error: " + String(e)); });
+    }).catch(e => { player.sendMessage("[MCBSO] Error: " + String(e)); });
 }
 
 // ── AFK Detection ─────────────────────────────────────────────
@@ -94,8 +97,8 @@ function showAfkMenu(player) {
 
   new ModalFormData()
     .title(t("ui_afk_title"))
-    .textField(t("ui_afk_thresh", { val: get("AFK_THRESHOLD") }),     "100-12000", { defaultValue: String(get("AFK_THRESHOLD")) })
-    .textField(t("ui_afk_move",   { val: get("AFK_MOVE_THRESHOLD") }), "0.1-5.0",  { defaultValue: String(get("AFK_MOVE_THRESHOLD")) })
+    .textField(t("ui_afk_thresh", { val: get("AFK_THRESHOLD") }), "100-12000", { defaultValue: String(get("AFK_THRESHOLD")) })
+    .textField(t("ui_afk_move", { val: get("AFK_MOVE_THRESHOLD") }), "0.1-5.0", { defaultValue: String(get("AFK_MOVE_THRESHOLD")) })
     .show(player)
     .then(res => {
       if (res.canceled || !res.formValues) { showMainMenu(player); return; }
@@ -104,11 +107,11 @@ function showAfkMenu(player) {
       const tv = _int(rawT, m_t, errors, "AFK Threshold");
       const mv = _flt(rawM, m_m, errors, "Move Threshold");
       if (errors.length > 0) { showError(player, errors, () => showAfkMenu(player)); return; }
-      set("AFK_THRESHOLD",      tv);
+      set("AFK_THRESHOLD", tv);
       set("AFK_MOVE_THRESHOLD", mv);
-      player.sendMessage("[SAL] " + t("ui_afk_saved"));
+      player.sendMessage(t("ui_afk_saved"));
       showMainMenu(player);
-    }).catch(() => {});
+    }).catch(() => { });
 }
 
 // ── Spawn Limiter main menu ────────────────────────────────────
@@ -126,11 +129,11 @@ function showSpawnLimiterMenu(player) {
       if (res.canceled || res.selection === undefined) { showMainMenu(player); return; }
       switch (res.selection) {
         case 0: showSpawnLimiterSettings(player); break;
-        case 1: showMobLimitList(player);         break;
-        case 2: showAddMobLimit(player);          break;
-        case 3: showMainMenu(player);             break;
+        case 1: showMobLimitList(player); break;
+        case 2: showAddMobLimit(player); break;
+        case 3: showMainMenu(player); break;
       }
-    }).catch(() => {});
+    }).catch(() => { });
 }
 
 // ── Spawn Limiter: general settings ───────────────────────────
@@ -144,9 +147,9 @@ function showSpawnLimiterSettings(player) {
   new ModalFormData()
     .title(t("ui_spawn_settings_title"))
     .textField(t("ui_spawn_warn_thresh", { val: get("SPAWN_WARN_THRESHOLD") }), "0.5-0.95", { defaultValue: String(get("SPAWN_WARN_THRESHOLD")) })
-    .textField(t("ui_spawn_msg_dur",     { val: get("SPAWN_MSG_DURATION") }),   "20-400",   { defaultValue: String(get("SPAWN_MSG_DURATION")) })
-    .textField(t("ui_spawn_cooldown",    { val: get("NOTIFY_COOLDOWN_TICKS") }), "20-400",  { defaultValue: String(get("NOTIFY_COOLDOWN_TICKS")) })
-    .textField(t("ui_spawn_radius",      { val: get("SPAWN_NOTIFY_RADIUS") }),  "16-256",   { defaultValue: String(get("SPAWN_NOTIFY_RADIUS")) })
+    .textField(t("ui_spawn_msg_dur", { val: get("SPAWN_MSG_DURATION") }), "20-400", { defaultValue: String(get("SPAWN_MSG_DURATION")) })
+    .textField(t("ui_spawn_cooldown", { val: get("NOTIFY_COOLDOWN_TICKS") }), "20-400", { defaultValue: String(get("NOTIFY_COOLDOWN_TICKS")) })
+    .textField(t("ui_spawn_radius", { val: get("SPAWN_NOTIFY_RADIUS") }), "16-256", { defaultValue: String(get("SPAWN_NOTIFY_RADIUS")) })
     .show(player)
     .then(res => {
       if (res.canceled || !res.formValues) { showSpawnLimiterMenu(player); return; }
@@ -157,13 +160,13 @@ function showSpawnLimiterSettings(player) {
       const c = _int(rawC, m_c, errors, "Cooldown");
       const r = _int(rawR, m_r, errors, "Radius");
       if (errors.length > 0) { showError(player, errors, () => showSpawnLimiterSettings(player)); return; }
-      set("SPAWN_WARN_THRESHOLD",  w);
-      set("SPAWN_MSG_DURATION",    d);
+      set("SPAWN_WARN_THRESHOLD", w);
+      set("SPAWN_MSG_DURATION", d);
       set("NOTIFY_COOLDOWN_TICKS", c);
-      set("SPAWN_NOTIFY_RADIUS",   r);
-      player.sendMessage("[SAL] " + t("ui_spawn_settings_saved"));
+      set("SPAWN_NOTIFY_RADIUS", r);
+      player.sendMessage(t("ui_spawn_settings_saved"));
       showSpawnLimiterMenu(player);
-    }).catch(() => {});
+    }).catch(() => { });
 }
 
 // ── Spawn Limiter: mob limit list ─────────────────────────────
@@ -177,12 +180,12 @@ function showMobLimitList(player) {
       .button2(t("ui_spawn_btn_back"))
       .show(player)
       .then(() => showSpawnLimiterMenu(player))
-      .catch(() => {});
+      .catch(() => { });
     return;
   }
 
   const entries = [...runtimeLimits.entries()];
-  const form    = new ActionFormData()
+  const form = new ActionFormData()
     .title(t("ui_mob_list_title"))
     .body(t("ui_mob_list_body"));
 
@@ -197,7 +200,7 @@ function showMobLimitList(player) {
     if (res.selection === entries.length) { showSpawnLimiterMenu(player); return; }
     const [selectedType, selectedLimit] = entries[res.selection];
     showEditMobLimit(player, selectedType, selectedLimit);
-  }).catch(() => {});
+  }).catch(() => { });
 }
 
 // ── Spawn Limiter: edit single limit ──────────────────────────
@@ -217,7 +220,7 @@ function showEditMobLimit(player, typeId, currentLimit) {
       if (shouldDelete) {
         runtimeLimits.delete(typeId);
         _saveLimits();
-        player.sendMessage("[SAL] " + t("ui_mob_edit_deleted", { type: shortType }));
+        player.sendMessage("[MCBSO] " + t("ui_mob_edit_deleted", { type: shortType }));
         showMobLimitList(player);
         return;
       }
@@ -230,9 +233,9 @@ function showEditMobLimit(player, typeId, currentLimit) {
 
       runtimeLimits.set(typeId, newLimit);
       _saveLimits();
-      player.sendMessage("[SAL] " + t("ui_mob_edit_saved", { type: shortType, val: newLimit }));
+      player.sendMessage(t("ui_mob_edit_saved", { type: shortType, val: newLimit }));
       showMobLimitList(player);
-    }).catch(() => {});
+    }).catch(() => { });
 }
 
 // ── Spawn Limiter: add new limit ──────────────────────────────
@@ -240,8 +243,8 @@ function showEditMobLimit(player, typeId, currentLimit) {
 function showAddMobLimit(player) {
   new ModalFormData()
     .title(t("ui_mob_add_title"))
-    .textField(t("ui_mob_add_type"),  "minecraft:zombie", { defaultValue: "minecraft:" })
-    .textField(t("ui_mob_add_limit"), "1-1000",           { defaultValue: "30" })
+    .textField(t("ui_mob_add_type"), "minecraft:zombie", { defaultValue: "minecraft:" })
+    .textField(t("ui_mob_add_limit"), "1-1000", { defaultValue: "30" })
     .show(player)
     .then(res => {
       if (res.canceled || !res.formValues) { showSpawnLimiterMenu(player); return; }
@@ -262,9 +265,9 @@ function showAddMobLimit(player) {
 
       runtimeLimits.set(typeId, limit);
       _saveLimits();
-      player.sendMessage("[SAL] " + t("ui_mob_add_saved", { type: typeId, val: limit }));
+      player.sendMessage(t("ui_mob_add_saved", { type: typeId, val: limit }));
       showSpawnLimiterMenu(player);
-    }).catch(() => {});
+    }).catch(() => { });
 }
 
 // ── Persist mob limits ────────────────────────────────────────
@@ -273,7 +276,7 @@ function _saveLimits() {
   try {
     const data = JSON.stringify([...runtimeLimits.entries()]);
     world.setDynamicProperty("sal_mob_limits", data);
-  } catch {}
+  } catch { }
 }
 
 export function loadRuntimeLimits() {
@@ -286,44 +289,44 @@ export function loadRuntimeLimits() {
         for (const [k, v] of entries) runtimeLimits.set(k, v);
       }
     }
-  } catch {}
+  } catch { }
 }
 
 // ── AI-LOD System ─────────────────────────────────────────────
 
 function showLodMenu(player) {
-  const m_t1  = meta("LOD_TIER1_DIST");
-  const m_t2  = meta("LOD_TIER2_DIST");
+  const m_t1 = meta("LOD_TIER1_DIST");
+  const m_t2 = meta("LOD_TIER2_DIST");
   const m_int = meta("LOD_CHECK_INTERVAL");
   const m_nav = meta("LOD_TIER2_NAV_DIST");
 
   new ModalFormData()
     .title(t("ui_lod_title"))
     .toggle(t("ui_lod_toggle"), { defaultValue: get("LOD_ENABLED") })
-    .textField(t("ui_lod_t1",       { val: get("LOD_TIER1_DIST") }),      "8-32",   { defaultValue: String(get("LOD_TIER1_DIST")) })
-    .textField(t("ui_lod_t2",       { val: get("LOD_TIER2_DIST") }),      "24-96",  { defaultValue: String(get("LOD_TIER2_DIST")) })
-    .textField(t("ui_lod_interval", { val: get("LOD_CHECK_INTERVAL") }),  "10-100", { defaultValue: String(get("LOD_CHECK_INTERVAL")) })
-    .textField(t("ui_lod_nav",      { val: get("LOD_TIER2_NAV_DIST") }), "2-16",   { defaultValue: String(get("LOD_TIER2_NAV_DIST")) })
+    .textField(t("ui_lod_t1", { val: get("LOD_TIER1_DIST") }), "8-32", { defaultValue: String(get("LOD_TIER1_DIST")) })
+    .textField(t("ui_lod_t2", { val: get("LOD_TIER2_DIST") }), "24-96", { defaultValue: String(get("LOD_TIER2_DIST")) })
+    .textField(t("ui_lod_interval", { val: get("LOD_CHECK_INTERVAL") }), "10-100", { defaultValue: String(get("LOD_CHECK_INTERVAL")) })
+    .textField(t("ui_lod_nav", { val: get("LOD_TIER2_NAV_DIST") }), "2-16", { defaultValue: String(get("LOD_TIER2_NAV_DIST")) })
     .show(player)
     .then(res => {
       if (res.canceled || !res.formValues) { showMainMenu(player); return; }
       const [enabled, rawT1, rawT2, rawInt, rawNav] = res.formValues;
       const errors = [];
-      const t1  = _int(rawT1,  m_t1,  errors, "Tier 1");
-      const t2  = _int(rawT2,  m_t2,  errors, "Tier 2");
-      const iv  = _int(rawInt, m_int, errors, "Interval");
+      const t1 = _int(rawT1, m_t1, errors, "Tier 1");
+      const t2 = _int(rawT2, m_t2, errors, "Tier 2");
+      const iv = _int(rawInt, m_int, errors, "Interval");
       const nav = _int(rawNav, m_nav, errors, "Nav Distance");
       if (t1 !== null && t2 !== null && t1 >= t2)
         errors.push(t("ui_lod_t1_lt_t2", { t1, t2 }));
       if (errors.length > 0) { showError(player, errors, () => showLodMenu(player)); return; }
-      set("LOD_ENABLED",        Boolean(enabled));
-      set("LOD_TIER1_DIST",     t1);
-      set("LOD_TIER2_DIST",     t2);
+      set("LOD_ENABLED", Boolean(enabled));
+      set("LOD_TIER1_DIST", t1);
+      set("LOD_TIER2_DIST", t2);
       set("LOD_CHECK_INTERVAL", iv);
       set("LOD_TIER2_NAV_DIST", nav);
-      player.sendMessage("[SAL] " + t(enabled ? "ui_lod_saved_on" : "ui_lod_saved_off"));
+      player.sendMessage(t(enabled ? "ui_lod_saved_on" : "ui_lod_saved_off"));
       showMainMenu(player);
-    }).catch(() => {});
+    }).catch(() => { });
 }
 
 // ── TPS Monitor ───────────────────────────────────────────────
@@ -342,9 +345,9 @@ function showTpsMenu(player) {
       const s = _int(rawS, m_s, errors, "Sample Size");
       if (errors.length > 0) { showError(player, errors, () => showTpsMenu(player)); return; }
       set("TPS_SAMPLE_SIZE", s);
-      player.sendMessage("[SAL] " + t("ui_tps_saved"));
+      player.sendMessage(t("ui_tps_saved"));
       showMainMenu(player);
-    }).catch(() => {});
+    }).catch(() => { });
 }
 
 // ── Language ──────────────────────────────────────────────────
@@ -355,18 +358,28 @@ function showLangMenu(player) {
     .body(t("ui_lang_body") + "\n" + t("ui_lang_current", { lang: getLang() }))
     .button("English (en_US)")
     .button("Deutsch (de_DE)")
+    .button("Français (fr_FR)")
+    .button("Español (es_ES)")
+    .button("Türkçe (tr_TR)")
+    .button("Polski (pl_PL)")
+    .button("Português (pt_BR)")
+    .button("Русский (ru_RU)")
+    .button("简体中文 (zh_CN)")
+    .button("日本語 (ja_JP)")
+    .button("Italiano (it_IT)")
+    .button("Nederlands (nl_NL)")
     .button(t("ui_spawn_btn_back"))
     .show(player)
     .then(res => {
-      if (res.canceled || res.selection === undefined || res.selection === 2) {
+      if (res.canceled || res.selection === undefined || res.selection === 12) {
         showMainMenu(player); return;
       }
-      const codes = ["en_US", "de_DE"];
-      const code  = codes[res.selection];
+      const codes = ["en_US", "de_DE", "fr_FR", "es_ES", "tr_TR", "pl_PL", "pt_BR", "ru_RU", "zh_CN", "ja_JP", "it_IT", "nl_NL"];
+      const code = codes[res.selection];
       setLang(code);
       player.sendMessage(t("ui_lang_saved", { lang: code }));
       showMainMenu(player);
-    }).catch(() => {});
+    }).catch(() => { });
 }
 
 // ── Reset confirmation ────────────────────────────────────────
@@ -384,9 +397,9 @@ function showResetConfirm(player) {
         return;
       }
       resetAll();
-      player.sendMessage("[SAL] " + t("ui_reset_done"));
+      player.sendMessage(t("ui_reset_done"));
       showMainMenu(player);
-    }).catch(() => {});
+    }).catch(() => { });
 }
 
 // ── Error display ─────────────────────────────────────────────
@@ -399,7 +412,7 @@ function showError(player, errors, retry) {
     .button2(t("ui_error_cancel"))
     .show(player)
     .then(res => { if (!res.canceled && res.selection === 0) retry(); })
-    .catch(() => {});
+    .catch(() => { });
 }
 
 // ── Input validation ──────────────────────────────────────────
@@ -413,13 +426,13 @@ function _flt(raw, m, errors, label) {
 
 function _intRaw(raw, min, max, errors, label) {
   const v = parseInt(String(raw).trim(), 10);
-  if (isNaN(v)) { errors.push(t("ui_error_not_number",   { label, val: raw })); return null; }
+  if (isNaN(v)) { errors.push(t("ui_error_not_number", { label, val: raw })); return null; }
   if (v < min || v > max) { errors.push(t("ui_error_out_of_range", { label, val: v, min, max })); return null; }
   return v;
 }
 function _fltRaw(raw, min, max, errors, label) {
   const v = parseFloat(String(raw).trim().replace(",", "."));
-  if (isNaN(v)) { errors.push(t("ui_error_not_decimal",  { label, val: raw })); return null; }
+  if (isNaN(v)) { errors.push(t("ui_error_not_decimal", { label, val: raw })); return null; }
   if (v < min || v > max) { errors.push(t("ui_error_out_of_range", { label, val: v, min, max })); return null; }
   return Math.round(v * 1000) / 1000;
 }
@@ -430,7 +443,7 @@ export function registerSettingsCommand(registry) {
   registry.registerCommand(
     {
       name: "mcbso:settings",
-      description: "Open SAL settings menu",
+      description: "Open MCBSO settings menu",
       permissionLevel: CommandPermissionLevel.GameDirectors,
       cheatsRequired: false,
     },

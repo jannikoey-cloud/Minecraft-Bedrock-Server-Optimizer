@@ -10,7 +10,7 @@
  *    player.sendMessage(t("tps_enabled"));
  *    player.sendMessage(t("clearlag_items", { items: 5, xp: 3 }));
  *
- *  Available languages: de_DE, en_US
+ *  Available languages: de_DE, en_US, fr_FR, es_ES, tr_TR, pl_PL, pt_BR, ru_RU, zh_CN, ja_JP, it_IT, nl_NL
  *  Default: en_US
  *
  *  Template syntax: {key} is replaced with the value from vars.
@@ -22,6 +22,16 @@
 import { world } from "@minecraft/server";
 import de_DE from "./de_DE.js";
 import en_US from "./en_US.js";
+import fr_FR from "./fr_FR.js";
+import es_ES from "./es_ES.js";
+import tr_TR from "./tr_TR.js";
+import pl_PL from "./pl_PL.js";
+import pt_BR from "./pt_BR.js";
+import ru_RU from "./ru_RU.js";
+import zh_CN from "./zh_CN.js";
+import ja_JP from "./ja_JP.js";
+import it_IT from "./it_IT.js";
+import nl_NL from "./nl_NL.js";
 
 const PROP_KEY = "sal_lang";
 const DEFAULT_LANG = "en_US";
@@ -29,6 +39,16 @@ const DEFAULT_LANG = "en_US";
 const LANGUAGES = {
   de_DE,
   en_US,
+  fr_FR,
+  es_ES,
+  tr_TR,
+  pl_PL,
+  pt_BR,
+  ru_RU,
+  zh_CN,
+  ja_JP,
+  it_IT,
+  nl_NL,
 };
 
 export const AVAILABLE_LANGS = Object.keys(LANGUAGES);

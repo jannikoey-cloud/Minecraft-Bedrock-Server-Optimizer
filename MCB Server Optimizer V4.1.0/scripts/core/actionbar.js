@@ -64,9 +64,9 @@ globalThis.__lagopt_clearActionbarSlot = clearActionbarSlot;
  */
 export function startActionbarLoop() {
   system.runInterval(() => {
-    for (const player of world.getPlayers()) {
-      const slots = actionbarSlots.get(player.id);
-      if (!slots || slots.size === 0) continue;
+    // OPT: Iterate only over players with active slots instead of all players
+    for (const [playerId, slots] of actionbarSlots) {
+      if (slots.size === 0) continue;
 
       const parts = [];
       for (const [slot, entry] of slots) {
@@ -78,6 +78,8 @@ export function startActionbarLoop() {
       }
 
       if (parts.length === 0) continue;
+      const player = world.getPlayers().find(p => p.id === playerId);
+      if (!player) continue;
       try { player.onScreenDisplay.setActionBar(parts.join("  §7|  ")); } catch {}
     }
   }, 20);

@@ -8,7 +8,7 @@ export default {
   // ── Allgemein ──────────────────────────────────────────────
   only_players:        "Nur fuer Spieler verfuegbar",
   lang_changed:        "§a[MCBSO] Sprache gesetzt: Deutsch",
-  lang_invalid:        "§c[MCBSO] Unbekannte Sprache. Verfuegbar: de_DE, en_US",
+  lang_invalid:        "§c[MCBSO] Unbekannte Sprache. Verfuegbar: de_DE, en_US, fr_FR, es_ES, tr_TR, pl_PL",
   lang_current:        "§e[MCBSO] Aktuelle Sprache: ",
 
   // ── Hilfe ─────────────────────────────────────────────────
@@ -86,6 +86,7 @@ export default {
   ui_clearlag_iv:      "Intervall Ticks (Aktuell: {val})",
   ui_clearlag_cap:     "MobCap Warnschwelle (Aktuell: {val})",
   ui_clearlag_chk:     "MobCap Pruef-Intervall Ticks (Aktuell: {val})",
+  ui_clearlag_cd:      "Benachrichtigungs-Cooldown Ticks (Aktuell: {val})",
   ui_clearlag_saved:   "[MCBSO] ClearLag gespeichert.",
 
   ui_afk_title:        "AFK Detection Einstellungen",

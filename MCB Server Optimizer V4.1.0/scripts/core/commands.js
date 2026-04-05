@@ -10,7 +10,7 @@
  * ============================================================
  */
 
-import { world, system, Player, CommandPermissionLevel } from "@minecraft/server";
+import { world, system, Player, CommandPermissionLevel, CustomCommandParamType } from "@minecraft/server";
 import { cleanupPlayer } from "../state.js";
 import { fail, success } from "./util.js";
 import { t, setLang, getLang, AVAILABLE_LANGS } from "../lang/i18n.js";
@@ -64,30 +64,31 @@ export function registerAllCommands() {
     );
 
     // ── mcbso:lang ────────────────────────────────────────────
+    customCommandRegistry.registerEnum("mcbso:languages", AVAILABLE_LANGS);
+
     customCommandRegistry.registerCommand(
       {
         name: "mcbso:lang",
-        description: "Change addon language (en_US / de_DE) or show current",
+        description: "Change addon language",
         permissionLevel: CommandPermissionLevel.GameDirectors,
         cheatsRequired: false,
+        mandatoryParameters: [
+          {
+            name: "mcbso:languages",
+            type: CustomCommandParamType.Enum,
+          },
+        ],
       },
-      (origin, args) => {
+      (origin, language) => {
         const player = origin.initiator ?? origin.sourceEntity;
         if (!(player instanceof Player)) return fail(t("only_players"));
-        // args may be undefined or empty – treat as "show current"
-        const code = (args && typeof args.language === "string")
-          ? args.language.trim()
-          : "";
-        if (!code) {
-          player.sendMessage(
-            t("lang_current") + getLang() +
-            `\nAvailable: ${AVAILABLE_LANGS.join(", ")}`
-          );
-          return success();
-        }
+
+        const code = language; // ✅ direkt der Wert
+
         if (!setLang(code)) {
-          return fail(t("lang_invalid"));
+        return fail(t("lang_invalid"));
         }
+
         player.sendMessage(t("lang_changed"));
         return success();
       }
